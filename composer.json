@@ -5,8 +5,7 @@
             "url": "https://github.com/farafiri/PHP-parsing-tool"
         }
     ],
-	"require": { 
-		"hnesk/php-peg": "dev-master",
+	"require": {
 		"farafiri/PHP-parsing-tool": "dev-master"
 	}
 }
