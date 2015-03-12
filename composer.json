@@ -1,0 +1,12 @@
+{
+"repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/farafiri/PHP-parsing-tool"
+        }
+    ],
+	"require": { 
+		"hnesk/php-peg": "dev-master",
+		"farafiri/PHP-parsing-tool": "dev-master"
+	}
+}
