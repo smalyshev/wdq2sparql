@@ -1,17 +1,6 @@
 <?php
 require_once 'SparqlGenerator.php';
 
-// function match($str) {
-// 	$x = new WDQParser($str) ;
-// 	$res = $x->match_Expression() ;
-// 	if ( $res === FALSE ) {
-// 		print "No Match\n" ;
-// 	}
-// 	else {
-// 		print_r( $res ) ;
-// 	}
-
-// }
 $grammar = <<<ENDG
 start :=> Expression .
 
@@ -25,13 +14,13 @@ ExpressionPart
 		:=> Clause
 		:=> "(" Expression ")" .
 
-Clause :=> ( Claim | NoClaim | String | Between | Quantity) .
+Clause :=> ( Claim | NoClaim | String | Between | Quantity | Tree) .
 
 Claim :=> "CLAIM[" Number ":" Item+"," "]" .
 
 NoClaim :=> "NOCLAIM[" Number (":" Item+",")? "]" .
 
-Item :=> ( Number | "(" Expression ")"  ) .
+Item :=> Number .
 
 String :=> "STRING[" Number ":" LiteralString+"," "]" .
 
@@ -43,6 +32,10 @@ BetweenParams
 		:=> Date "," Date .
 
 Quantity :=> "QUANTITY[" Number ":" Number ("," Number)? "]".
+
+Tree :=> "TREE[" Item+"," "][" PropList? "]" ("[" PropList? "]")? .
+
+PropList :=> Number+"," .
 
 Number :=> /\d+/ .
 LiteralString :=> /"[^"]*?"/ .
@@ -152,6 +145,25 @@ function generate($tree) {
 				$high = null;
 			}
 			return new SparqlQuantity($pid, $low, $high);
+		case 'Tree':
+			$extract = function ($it) { return $it->getLeftLeaf()->getContent(); };
+			$forward = array_map($extract, $tree->getSubnode(3)->findAll('Number'));
+			$back = $tree->getSubnode(5);
+			if($back && $back->isBranch()) {
+				$backward = array_map($extract, $back->findAll('Number'));
+			} else {
+				$backward = array();
+			}
+			$items = array_map(
+				 function ($it) use ($forward, $backward) {
+				 	return new SparqlTree($it->getLeftLeaf()->getContent(), $forward, $backward);
+				 },
+				 $tree->findAll('Item')
+			);
+			if(count($items) == 1) {
+				return $items[0];
+			}
+			return new SparqlUnion($items);
 		default:
 			var_dump($tree->getType());
 	}
@@ -183,6 +195,10 @@ function match($str) {
 // match('CLAIM[31:5] AND STRING[5:"TEST"]');
 // match('CLAIM[31:5] OR QUANTITY[5:10,20]');
 // match('CLAIM[31:5] AND QUANTITY[5:42]');
-match('CLAIM[31:5] OR BETWEEN[5,1880,1990-05]');
-match('CLAIM[31:5] AND BETWEEN[5,+00000001861-03-17T00:00:00Z]');
-match('CLAIM[31:5] AND BETWEEN[5,,-10000861-03-17]');
+// match('CLAIM[31:5] OR BETWEEN[5,1880,1990-05]');
+// match('CLAIM[31:5] AND BETWEEN[5,+00000001861-03-17T00:00:00Z]');
+// match('CLAIM[31:5] AND BETWEEN[5,,-10000861-03-17]');
+match("TREE[30][150][17,131]");
+match("CLAIM[138:676555] AND NOCLAIM[31:515]");
+match("(TREE[30][150][17,131] AND CLAIM[138:676555])");
+match("TREE[4504][171,273,75,76,77,70,71,74,89]");

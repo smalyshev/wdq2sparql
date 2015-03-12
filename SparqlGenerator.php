@@ -170,3 +170,34 @@ class SparqlQuantity extends SparqlExpression {
 		return "{$indent}{$this->itemName} {$this->propertyName($this->id)} $q .\n{$indent}FILTER { $cond }\n";
 	}
 }
+
+class SparqlTree extends SparqlExpression {
+	private $itemName;
+	private $forward;
+	private $backward;
+	private static $treeCounter = 0;
+
+	public function __construct($id, $forward, $back, $item = "?item") {
+		$this->itemName = $item;
+		$this->id = $id;
+		$this->forward = $forward;
+		$this->backward = $back;
+	}
+
+	public function emit($indent = "") {
+		$treeVar = "?tree".self::$treeCounter++;
+		if($this->backward) {
+			$propNames = join("|", array_map(array($this, "propertyName"), $this->backward));
+			$res = "{$indent}$treeVar ($propNames)* {$this->entityName($this->id)} .\n";
+		} else {
+			$res = "{$indent}BIND ({$this->entityName($this->id)} AS $treeVar)\n";
+		}
+		if($this->forward) {
+			$propNames = join("|", array_map(array($this, "propertyName"), $this->forward));
+			$res .= "{$indent}$treeVar ($propNames)* {$this->itemName} .\n";
+		} else {
+			$res .= "{$indent}FILTER ({$this->entityName($this->id)} = $treeVar)\n";
+		}
+		return $res;
+	}
+}
