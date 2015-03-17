@@ -2,6 +2,8 @@
 require_once 'vendor/autoload.php';
 require_once 'SparqlGenerator.php';
 
+use ParserGenerator\SyntaxTreeNode;
+
 class WDQParser {
 	private $grammar = <<<ENDG
 start :=> Expression .
@@ -46,12 +48,34 @@ LiteralString :=> /"[^"]*?"/ .
 Date :=> /[+-]?\d+(-\d{2}(-\d{2}(T\d{2}:\d{2}:\d{2}Z)?)?)?/ .
 ENDG;
 
+	private $counter = 0;
+
 	public function __construct()
 	{
 		$this->parser = new \ParserGenerator\Parser($this->grammar, array("ignoreWhitespaces" => true));
 	}
 
-	public function generate($tree)
+	private function dump($x) {
+		echo "<pre>";
+		var_dump($x);
+		echo "</pre>";
+
+	}
+
+	protected function generateItem(SyntaxTreeNode\Branch $item) {
+		$sub = $item->getSubnode(0);
+		$left = $sub->getSubnode(0);
+		if($left && !$left->isBranch() && $left->getContent() == "(") {
+			$subvarName = "?sub".$this->counter++;
+			$subexp = $this->generate($sub->getSubnode(1), $subvarName);
+			return new SparqlSubquery($subvarName, $subexp);
+		} else {
+			$itemno = $item->getLeftLeaf()->getContent();
+			return new SparqlItem($itemno);
+		}
+	}
+
+	public function generate(SyntaxTreeNode\Branch $tree, $itemName)
 	{
 		$res = "";
 		if(!$tree) {
@@ -64,18 +88,18 @@ ENDG;
 		switch(strtolower($tree->getType())) {
 			case 'clause':
 			case 'start':
-				return $this->generate($tree->getSubnode(0));
+				return $this->generate($tree->getSubnode(0), $itemName);
 			case 'expressionpart':
 				if(!$tree->getSubnode(0)->isBranch()) {
 					// ( case
-					return $this->generate($tree->getSubnode(1));
+					return $this->generate($tree->getSubnode(1), $itemName);
 				}
-				return $this->generate($tree->getSubnode(0));
+				return $this->generate($tree->getSubnode(0), $itemName);
 			case 'expression':
 				$op = $tree->getSubnode(1);
 				if($op && !$op->isBranch()) {
-					$left = $this->generate($tree->getSubnode(0));
-					$right = $this->generate($tree->getSubnode(2));
+					$left = $this->generate($tree->getSubnode(0), $itemName);
+					$right = $this->generate($tree->getSubnode(2), $itemName);
 					if($op->getContent() == "OR") {
 						return SparqlUnion::addTwo($left, $right);
 					} else {
@@ -87,15 +111,14 @@ ENDG;
 					if(!$subnode->isBranch()) {
 						continue;
 					}
-					return $this->generate($subnode);
+					return $this->generate($subnode, $itemName);
 				}
 				break;
 			case 'claim':
 				$pid = $tree->getSubnode(1)->getLeftLeaf()->getContent();
 				$items = array();
 				foreach($tree->findAll('Item') as $item) {
-					$itemno = $item->getLeftLeaf()->getContent();
-					$items[] = new SparqlClaim($pid, $itemno);
+					$items[] = new SparqlClaim($itemName, $pid, $this->generateItem($item) );
 				}
 				if(count($items) == 1) {
 					return $items[0];
@@ -105,11 +128,10 @@ ENDG;
 				$pid = $tree->getSubnode(1)->getLeftLeaf()->getContent();
 				$items = array();
 				foreach($tree->findAll('Item') as $item) {
-					$itemno = $item->getLeftLeaf()->getContent();
-					$items[] = new SparqlNoClaim($pid, $itemno);
+					$items[] = new SparqlNoClaim($itemName, $pid, $this->generateItem($item) );
 				}
 				if(!$items) {
-					return new SparqlNoClaim($pid);
+					return new SparqlNoClaim($itemName, $pid, new SparqlSubquery("?dummy".$this->counter++) );
 				}
 				if(count($items) == 1) {
 					return $items[0];
@@ -119,7 +141,7 @@ ENDG;
 				$pid = $tree->getSubnode(1)->getLeftLeaf()->getContent();
 				$items = array();
 				foreach($tree->findAll('LiteralString') as $item) {
-					$items[] = new SparqlString($pid, $item->getLeftLeaf()->getContent());
+					$items[] = new SparqlString($itemName, $pid, $item->getLeftLeaf()->getContent());
 				}
 				if(count($items) == 1) {
 					return $items[0];
@@ -131,14 +153,14 @@ ENDG;
 				$subnumbers = $numbers->getSubnodes();
 				switch(count($subnumbers)) {
 					case 1:
-						return new SparqlBetween($pid, $subnumbers[0]->getLeftLeaf()->getContent(), null);
+						return new SparqlBetween($itemName, $pid, $subnumbers[0]->getLeftLeaf()->getContent() );
 					case 2:
-						return new SparqlBetween($pid, null, $subnumbers[1]->getLeftLeaf()->getContent());
+						return new SparqlBetween($itemName, $pid, null, $subnumbers[1]->getLeftLeaf()->getContent() );
 					case 3:
-						return new SparqlBetween($pid, $subnumbers[0]->getLeftLeaf()->getContent(),
-							 $subnumbers[2]->getLeftLeaf()->getContent());
+						return new SparqlBetween($itemName, $pid, $subnumbers[0]->getLeftLeaf()->getContent(),
+							 $subnumbers[2]->getLeftLeaf()->getContent() );
 					default:
-						throw new Exception("Weird number of args for Betweeen");
+						throw new Exception("Weird number of args for Between");
 				}
 				break;
 			case 'quantity':
@@ -150,10 +172,14 @@ ENDG;
 				} else {
 					$high = null;
 				}
-				return new SparqlQuantity($pid, $low, $high);
+				return new SparqlQuantity($itemName, $pid, $low, $high);
 			case 'tree':
 				$extract = function ($it) { return $it->getLeftLeaf()->getContent(); };
-				$forward = array_map($extract, $tree->getSubnode(3)->findAll('Number'));
+				if($tree->getSubnode(3)->isBranch()) {
+					$forward = array_map($extract, $tree->getSubnode(3)->findAll('Number'));
+				} else {
+					$forward = array();
+				}
 				$back = $tree->getSubnode(5);
 				if($back && $back->isBranch()) {
 					$backward = array_map($extract, $back->findAll('Number'));
@@ -161,8 +187,8 @@ ENDG;
 					$backward = array();
 				}
 				$items = array_map(
-					 function ($it) use ($forward, $backward) {
-					 	return new SparqlTree($it->getLeftLeaf()->getContent(), $forward, $backward);
+					 function ($it) use ($forward, $backward, $itemName) {
+					 	return new SparqlTree($itemName, $it->getLeftLeaf()->getContent(), $forward, $backward );
 					 },
 					 $tree->findAll('Item')
 				);
@@ -174,8 +200,8 @@ ENDG;
 				$extract = function ($it) { return $it->getLeftLeaf()->getContent(); };
 				$props = array_map($extract, $tree->getSubnode(3)->findAll('Number'));
 				$items = array_map(
-						function ($it) use ($props) {
-							return new SparqlTree($it->getLeftLeaf()->getContent(), $props, $props);
+						function ($it) use ($props, $itemName) {
+							return new SparqlTree($itemName, $it->getLeftLeaf()->getContent(), $props, $props );
 						},
 						$tree->findAll('Item')
 				);
@@ -214,3 +240,4 @@ ENDG;
 // match("(TREE[30][150][17,131] AND CLAIM[138:676555])");
 // match("TREE[4504][171,273,75,76,77,70,71,74,89]");
 // match("WEB[9682][25,22,40,26,7,9,1038]");
+// match("

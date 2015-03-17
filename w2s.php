@@ -7,7 +7,7 @@ if(!empty($_POST['wdq'])) {
 	if(!$parsed) {
 		$text = "Failed to parse the query";
 	} else {
-		$exp = $parser->generate($parsed);
+		$exp = $parser->generate($parsed, "?item");
 		$sparql = $exp->emit('  ');
 		$text = "SELECT ?item WHERE {\n$sparql}";
 	}
@@ -17,7 +17,7 @@ if(!empty($_POST['wdq'])) {
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>WDQ2SPARQL</title>
 </head>
 <body>
 <form action="w2s.php" method="POST">

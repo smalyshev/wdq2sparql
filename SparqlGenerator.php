@@ -50,34 +50,68 @@ class SparqlUnion extends SparqlCollection {
 	}
 }
 
+abstract class SparqlVar extends SparqlExpression {
+	protected $var;
+	public function __construct( $name ) {
+		$this->var = $name;
+	}
+	abstract function getVarName();
+}
+
+class SparqlItem extends SparqlVar {
+	public function emit() {
+		return "";
+	}
+
+	public function getVarName() {
+		return $this->entityName($this->id);
+	}
+}
+
+class SparqlSubquery extends SparqlVar {
+	public function __construct( $var, SparqlExpression $sub = null ) {
+		parent::__construct($var);
+		$this->sub = $sub;
+	}
+
+	public function getVarName() {
+		return $this->var;
+	}
+
+	public function emit($indent = "") {
+		return $this->sub?$this->sub->emit($indent):"";
+	}
+}
+
 class SparqlClaim extends SparqlExpression {
 	private $itemName;
-	public function __construct( $id, $value, $item = "?item" ) {
+	public function __construct( $item, $id, SparqlVar $value) {
 		$this->itemName = $item;
 		$this->id = $id;
 		$this->value = $value;
 	}
 	public function emit( $indent = "" ) {
-		return "$indent{$this->itemName} {$this->propertyName($this->id)} {$this->entityName($this->value)} .\n";
+		return "$indent{$this->itemName} {$this->propertyName($this->id)} {$this->value->getVarName()} .\n"
+				. $this->value->emit($indent);
 	}
 }
 
 class SparqlNoClaim extends SparqlExpression {
-	private static $dummyCounter = 0;
-	public function __construct( $id, $value = null, $item = "?item" ) {
+	private $itemName;
+	public function __construct( $item, $id, SparqlVar $value = null ) {
 		$this->itemName = $item;
 		$this->id = $id;
 		$this->value = $value;
 	}
 	public function emit( $indent = "" ) {
-		$e = $this->value ? "entity:Q" . $this->value : "?dummy" . self::$dummyCounter ++;
-		return "{$indent}FILTER NOT EXISTS { {$this->itemName} {$this->propertyName($this->id)} $e }\n";
+		return "{$indent}FILTER NOT EXISTS { {$this->itemName} {$this->propertyName($this->id)} {$this->value->getVarName()} }\n"
+			. $this->value->emit($indent);
 	}
 }
 
 class SparqlString extends SparqlExpression {
 	private $itemName;
-	public function __construct( $id, $value, $item = "?item" ) {
+	public function __construct( $item, $id, $value ) {
 		$this->itemName = $item;
 		$this->id = $id;
 		$this->value = $value;
@@ -92,7 +126,7 @@ class SparqlBetween extends SparqlExpression {
 	private static $timeCounter = 0;
 	private $from;
 	private $to;
-	public function __construct( $id, $from, $to, $item = "?item" ) {
+	public function __construct( $item, $id, $from = null, $to = null ) {
 		$this->itemName = $item;
 		$this->id = $id;
 		$this->from = $from;
@@ -133,7 +167,7 @@ class SparqlQuantity extends SparqlExpression {
 	private static $qCounter = 0;
 	private $from;
 	private $to;
-	public function __construct( $id, $from, $to, $item = "?item" ) {
+	public function __construct( $item, $id, $from, $to ) {
 		$this->itemName = $item;
 		$this->id = $id;
 		$this->from = $from;
@@ -158,26 +192,28 @@ class SparqlTree extends SparqlExpression {
 	private $forward;
 	private $backward;
 	private static $treeCounter = 0;
-	public function __construct( $id, $forward, $back, $item = "?item" ) {
+	public function __construct( $item, $id, $forward, $back ) {
 		$this->itemName = $item;
 		$this->id = $id;
 		$this->forward = $forward;
 		$this->backward = $back;
 	}
 	public function emit( $indent = "" ) {
-		$treeVar = "?tree" . self::$treeCounter ++;
-		if ( $this->backward ) {
-			$propNames = join( "|", array_map( array ($this,"propertyName" ), $this->backward ) );
-			$res = "{$indent}$treeVar ($propNames)* {$this->entityName($this->id)} .\n";
-		} else {
-			$res = "{$indent}BIND ({$this->entityName($this->id)} AS $treeVar)\n";
-		}
+		$res = "";
 		if ( $this->forward ) {
+			$treeVar = "?tree" . self::$treeCounter ++;
 			$propNames = join( "|", array_map( array ($this,"propertyName"
 			), $this->forward ) );
 			$res .= "{$indent}$treeVar ($propNames)* {$this->itemName} .\n";
 		} else {
-			$res .= "{$indent}FILTER ({$this->entityName($this->id)} = $treeVar)\n";
+			$treeVar = $this->itemName;
+		}
+
+		if ( $this->backward ) {
+			$propNames = join( "|", array_map( array ($this,"propertyName" ), $this->backward ) );
+			$res .= "{$indent}$treeVar ($propNames)* {$this->entityName($this->id)} .\n";
+		} else {
+			$res .= "{$indent}BIND ({$this->entityName($this->id)} AS $treeVar)\n";
 		}
 		return $res;
 	}
