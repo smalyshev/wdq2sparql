@@ -1,5 +1,5 @@
 <?php
-$text = "What?";
+$text = "Nothing yet...";
 if(!empty($_POST['wdq'])) {
 	require_once __DIR__.'/WDQ.php';
 	$parser = new WDQParser();
@@ -20,6 +20,23 @@ if(!empty($_POST['wdq'])) {
 <title>WDQ2SPARQL</title>
 </head>
 <body>
+<div style="float: right">
+Supported syntax:<br>
+<ul>
+<li>claim, noclaim
+<li>tree/web
+<li>quantity/between/string
+<li>and/or
+<li>Subqueries within claim/noclaim
+</ul>
+Not supported yet:<br>
+<ul>
+<li>Subqueries within tree/web
+<li>around
+<li>qualifiers
+<li>link
+</ul>
+</div>
 <form action="w2s.php" method="POST">
 Please enter WDQ query:<br>
 <textarea cols="80" rows="10" name="wdq">
@@ -27,8 +44,9 @@ Please enter WDQ query:<br>
 </textarea><br>
 <input type="submit" value="Translate"/>
 </form>
+<br clear="all">
 <hr>
-SPARQL:<br>
+Translation to SPARQL:<br>
 <pre>
 <?= $text; ?>
 </pre>

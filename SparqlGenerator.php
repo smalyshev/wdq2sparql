@@ -64,7 +64,7 @@ class SparqlItem extends SparqlVar {
 	}
 
 	public function getVarName() {
-		return $this->entityName($this->id);
+		return $this->entityName($this->var);
 	}
 }
 

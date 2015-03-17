@@ -3,7 +3,7 @@ require_once __DIR__.'/vendor/autoload.php';
 require_once __DIR__.'/SparqlGenerator.php';
 
 use ParserGenerator\SyntaxTreeNode;
-
+use ParserGenerator\Parser;
 class WDQParser {
 	private $grammar = <<<ENDG
 start :=> Expression .
@@ -52,7 +52,7 @@ ENDG;
 
 	public function __construct()
 	{
-		$this->parser = new \ParserGenerator\Parser($this->grammar, array("ignoreWhitespaces" => true));
+		$this->parser = new Parser($this->grammar, array("ignoreWhitespaces" => true, 'caseInsensitive' => true));
 	}
 
 	private function dump($x) {
