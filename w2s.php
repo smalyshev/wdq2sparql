@@ -1,7 +1,7 @@
 <?php
 $text = "What?";
 if(!empty($_POST['wdq'])) {
-	require_once 'WDQ.php';
+	require_once __DIR__.'/WDQ.php';
 	$parser = new WDQParser();
 	$parsed = $parser->parse($_POST['wdq']);
 	if(!$parsed) {

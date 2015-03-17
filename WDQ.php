@@ -1,6 +1,6 @@
 <?php
-require_once 'vendor/autoload.php';
-require_once 'SparqlGenerator.php';
+require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__.'/SparqlGenerator.php';
 
 use ParserGenerator\SyntaxTreeNode;
 
