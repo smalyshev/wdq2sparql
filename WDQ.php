@@ -20,7 +20,7 @@ ExpressionPart
 
 Clause :=> ( Claim | NoClaim | String | Between | Quantity | Tree | Web) .
 
-Claim :=> "CLAIM[" Number ":" Item+"," "]" .
+Claim :=> "CLAIM[" Number (":" Item+",")? "]" .
 
 NoClaim :=> "NOCLAIM[" Number (":" Item+",")? "]" .
 
@@ -119,6 +119,9 @@ ENDG;
 				$items = array();
 				foreach($tree->findAll('Item') as $item) {
 					$items[] = new SparqlClaim($itemName, $pid, $this->generateItem($item) );
+				}
+				if(!$items) {
+					return new SparqlClaim($itemName, $pid, new SparqlSubquery("?dummy".$this->counter++) );
 				}
 				if(count($items) == 1) {
 					return $items[0];
