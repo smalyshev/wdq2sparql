@@ -1,5 +1,6 @@
 <?php
 $text = "Nothing yet...";
+ini_set('xdebug.max_nesting_level', 10000);
 if(!empty($_POST['wdq'])) {
 	require_once __DIR__.'/WDQ.php';
 	$parser = new WDQParser();
