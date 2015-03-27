@@ -1,13 +1,7 @@
 <?php
 
 abstract class SparqlExpression {
-	abstract function emit();
-	protected function propertyName( $id ) {
-		return "wdt:P{$id}";
-	}
-	protected function entityName( $id ) {
-		return "entity:Q{$id}";
-	}
+	abstract function emit(SparqlSyntax $syntax);
 }
 
 abstract class SparqlCollection extends SparqlExpression {
@@ -18,9 +12,9 @@ abstract class SparqlCollection extends SparqlExpression {
 	public function add( SparqlExpression $ex ) {
 		$this->items[] = $ex;
 	}
-	protected function emitAll( $indent = "" ) {
-		return array_map( function ( SparqlExpression $ex ) use($indent ) {
-			return $ex->emit( $indent );
+	protected function emitAll( SparqlSyntax $syntax, $indent = "" ) {
+		return array_map( function ( SparqlExpression $ex ) use($syntax, $indent ) {
+			return $ex->emit( $syntax, $indent );
 		}, $this->items );
 	}
 	public static function addTwo( SparqlExpression $ex1, SparqlExpression $ex2 ) {
@@ -28,23 +22,22 @@ abstract class SparqlCollection extends SparqlExpression {
 			$ex1->add( $ex2 );
 			return $ex1;
 		}
-		return new static( array ($ex1,$ex2
-		) );
+		return new static( array ($ex1,$ex2) );
 	}
 }
 
 class SparqlAnd extends SparqlCollection {
-	public function emit( $indent = "" ) {
-		return join( "", $this->emitAll( $indent ) );
+	public function emit( SparqlSyntax $syntax, $indent = "" ) {
+		return join( "", $this->emitAll( $syntax, $indent ) );
 	}
 }
 
 class SparqlUnion extends SparqlCollection {
-	public function emit( $indent = "" ) {
+	public function emit( SparqlSyntax $syntax, $indent = "" ) {
 		if ( count( $this->items ) > 1 ) {
-			return "{\n" . join( "} UNION {\n", $this->emitAll( $indent . "  " ) ) . "}\n";
+			return "{\n" . join( "} UNION {\n", $this->emitAll( $syntax, $indent . "  " ) ) . "}\n";
 		} elseif ( count( $this->items ) == 1 ) {
-			return $this->items[0]->emit( $indent );
+			return $this->items[0]->emit( $syntax, $indent );
 		}
 		return "";
 	}
@@ -55,16 +48,16 @@ abstract class SparqlVar extends SparqlExpression {
 	public function __construct( $name ) {
 		$this->var = $name;
 	}
-	abstract function getVarName();
+	abstract function getVarName(SparqlSyntax $syntax);
 }
 
 class SparqlItem extends SparqlVar {
-	public function emit() {
+	public function emit(SparqlSyntax $syntax) {
 		return "";
 	}
 
-	public function getVarName() {
-		return $this->entityName($this->var);
+	public function getVarName(SparqlSyntax $syntax) {
+		return $syntax->entityName($this->var);
 	}
 }
 
@@ -74,12 +67,12 @@ class SparqlSubquery extends SparqlVar {
 		$this->sub = $sub;
 	}
 
-	public function getVarName() {
+	public function getVarName(SparqlSyntax $syntax) {
 		return $this->var;
 	}
 
-	public function emit($indent = "") {
-		return $this->sub?$this->sub->emit($indent):"";
+	public function emit(SparqlSyntax $syntax, $indent = "") {
+		return $this->sub?$this->sub->emit($syntax, $indent):"";
 	}
 }
 
@@ -90,9 +83,9 @@ class SparqlClaim extends SparqlExpression {
 		$this->id = $id;
 		$this->value = $value;
 	}
-	public function emit( $indent = "" ) {
-		return "$indent{$this->itemName} {$this->propertyName($this->id)} {$this->value->getVarName()} .\n"
-				. $this->value->emit($indent);
+	public function emit( SparqlSyntax $syntax, $indent = "" ) {
+		return "$indent{$this->itemName} {$syntax->propertyName($this->id)} {$this->value->getVarName($syntax)} .\n"
+				. $this->value->emit($syntax, $indent);
 	}
 }
 
@@ -103,9 +96,9 @@ class SparqlNoClaim extends SparqlExpression {
 		$this->id = $id;
 		$this->value = $value;
 	}
-	public function emit( $indent = "" ) {
-		return "{$indent}FILTER NOT EXISTS { {$this->itemName} {$this->propertyName($this->id)} {$this->value->getVarName()} }\n"
-			. $this->value->emit($indent);
+	public function emit( SparqlSyntax $syntax, $indent = "" ) {
+		return "{$indent}FILTER NOT EXISTS { {$this->itemName} {$syntax->propertyName($this->id)} {$this->value->getVarName($syntax)} }\n"
+			. $this->value->emit($syntax, $indent);
 	}
 }
 
@@ -116,8 +109,8 @@ class SparqlString extends SparqlExpression {
 		$this->id = $id;
 		$this->value = $value;
 	}
-	public function emit( $indent = "" ) {
-		return "$indent{$this->itemName} {$this->propertyName($this->id)} {$this->value} .\n";
+	public function emit( SparqlSyntax $syntax, $indent = "" ) {
+		return "$indent{$this->itemName} {$syntax->propertyName($this->id)} {$this->value} .\n";
 	}
 }
 
@@ -142,7 +135,7 @@ class SparqlBetween extends SparqlExpression {
 
 		return "$y-$mon-$day$t";
 	}
-	public function emit( $indent = "" ) {
+	public function emit( SparqlSyntax $syntax, $indent = "" ) {
 		$cond = array ();
 		$tm = "?time" . self::$timeCounter ++;
 
@@ -158,7 +151,7 @@ class SparqlBetween extends SparqlExpression {
 			return "";
 		}
 		$cond = join( " AND ", $cond );
-		return "{$indent}{$this->itemName} {$this->propertyName($this->id)} $tm .\n{$indent}FILTER { $cond }\n";
+		return "{$indent}{$this->itemName} {$syntax->propertyName($this->id)} $tm .\n{$indent}FILTER { $cond }\n";
 	}
 }
 
@@ -173,7 +166,7 @@ class SparqlQuantity extends SparqlExpression {
 		$this->from = $from;
 		$this->to = $to;
 	}
-	public function emit( $indent = "" ) {
+	public function emit( SparqlSyntax $syntax, $indent = "" ) {
 		$cond = array ();
 		$q = "?q" . self::$qCounter ++;
 
@@ -183,7 +176,7 @@ class SparqlQuantity extends SparqlExpression {
 			$cond = "$q = $this->from";
 		}
 
-		return "{$indent}{$this->itemName} {$this->propertyName($this->id)} $q .\n{$indent}FILTER { $cond }\n";
+		return "{$indent}{$this->itemName} {$syntax->propertyName($this->id)} $q .\n{$indent}FILTER { $cond }\n";
 	}
 }
 
@@ -198,11 +191,11 @@ class SparqlTree extends SparqlExpression {
 		$this->forward = $forward;
 		$this->backward = $back;
 	}
-	public function emit( $indent = "" ) {
+	public function emit( SparqlSyntax $syntax, $indent = "" ) {
 		$res = "";
 		if ( $this->forward ) {
 			$treeVar = "?tree" . self::$treeCounter ++;
-			$propNames = join( "|", array_map( array ($this,"propertyName"
+			$propNames = join( "|", array_map( array ($syntax,"propertyName"
 			), $this->forward ) );
 			$res .= "{$indent}$treeVar ($propNames)* {$this->itemName} .\n";
 		} else {
@@ -210,10 +203,10 @@ class SparqlTree extends SparqlExpression {
 		}
 
 		if ( $this->backward ) {
-			$propNames = join( "|", array_map( array ($this,"propertyName" ), $this->backward ) );
-			$res .= "{$indent}$treeVar ($propNames)* {$this->entityName($this->id)} .\n";
+			$propNames = join( "|", array_map( array ($syntax,"propertyName" ), $this->backward ) );
+			$res .= "{$indent}$treeVar ($propNames)* {$syntax->entityName($this->id)} .\n";
 		} else {
-			$res .= "{$indent}BIND ({$this->entityName($this->id)} AS $treeVar)\n";
+			$res .= "{$indent}BIND ({$syntax->entityName($this->id)} AS $treeVar)\n";
 		}
 		return $res;
 	}

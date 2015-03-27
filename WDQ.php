@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__.'/vendor/autoload.php';
 require_once __DIR__.'/SparqlGenerator.php';
+require_once __DIR__.'/Syntax.php';
 
 use ParserGenerator\SyntaxTreeNode;
 use ParserGenerator\Parser;
@@ -243,4 +244,3 @@ ENDG;
 // match("(TREE[30][150][17,131] AND CLAIM[138:676555])");
 // match("TREE[4504][171,273,75,76,77,70,71,74,89]");
 // match("WEB[9682][25,22,40,26,7,9,1038]");
-// match("
