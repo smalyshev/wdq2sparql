@@ -128,7 +128,7 @@ class SparqlBetween extends SparqlExpression {
 	private function fixDate( $dateStr ) {
 		preg_match( '/([+-]?\d+)(?:-(\d{2})(?:-(\d{2})(T\d{2}:\d{2}:\d{2}Z)?)?)?/', $dateStr, $m );
 
-		$y = (int)$m[1];
+		$y = sprintf("%04d", (int)$m[1]);
 		$mon = !empty( $m[2] ) ? $m[2] : "01";
 		$day = !empty( $m[3] ) ? $m[3] : "01";
 		$t = !empty( $m[4] ) ? $m[4] : "T00:00:00Z";
@@ -150,8 +150,8 @@ class SparqlBetween extends SparqlExpression {
 		if ( !$cond ) {
 			return "";
 		}
-		$cond = join( " AND ", $cond );
-		return "{$indent}{$this->itemName} {$syntax->propertyName($this->id)} $tm .\n{$indent}FILTER { $cond }\n";
+		$cond = join( " && ", $cond );
+		return "{$indent}{$this->itemName} {$syntax->propertyName($this->id)} $tm .\n{$indent}FILTER ( $cond )\n";
 	}
 }
 
