@@ -19,7 +19,7 @@ class WDTKSyntax implements SparqlSyntax {
 
 class WikidataSyntax implements SparqlSyntax {
 	public function getPrefixes() {
-		return array("wdt" => "http://www.wikidata.org/entity/assert/",
+		return array("wdt" => "http://www.wikidata.org/prop/direct/",
 				"entity" =>  "http://www.wikidata.org/entity/");
 	}
 	public function propertyName( $id ) {
