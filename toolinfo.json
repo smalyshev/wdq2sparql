@@ -1,0 +1,9 @@
+{
+    "name" : "wdq2sparql",
+    "title" : "WDQ to SPARQL",
+    "description" : "Convert WDQ queries syntax to SPARQL",
+    "url" : "http://tools.wmflabs.org/wdq2sparql/w2s.php",
+    "keywords" : "tools, search, discoverability",
+    "author" : "Stas Malyshev",
+    "repository" : "https://github.com/smalyshev/wdq2sparql.git"
+}
