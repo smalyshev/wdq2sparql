@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__.'/vendor/autoload.php';
-require_once __DIR__.'/Syntax.php';
 
 use ParserGenerator\SyntaxTreeNode;
 use ParserGenerator\Parser;
