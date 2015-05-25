@@ -1,0 +1,9 @@
+CLAIM[31:5,67] OR CLAIM[27:801] AND NOCLAIM[45]
+{
+  ?item wdt:P31 entity:Q5 .
+} UNION {
+  ?item wdt:P31 entity:Q67 .
+} UNION {
+  ?item wdt:P27 entity:Q801 .
+}
+FILTER NOT EXISTS { ?item wdt:P45 ?dummy0 }

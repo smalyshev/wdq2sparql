@@ -1,0 +1,4 @@
+CLAIM[31:5] AND QUANTITY[5:42]
+?item wdt:P31 entity:Q5 .
+?item wdt:P5 ?q1 .
+FILTER ( ?q1 = 42 )

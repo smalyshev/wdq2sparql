@@ -1,0 +1,3 @@
+WEB[9682][25,22,40,26,7,9,1038]
+?tree3 (wdt:P25|wdt:P22|wdt:P40|wdt:P26|wdt:P7|wdt:P9|wdt:P1038)* ?item .
+?tree3 (wdt:P25|wdt:P22|wdt:P40|wdt:P26|wdt:P7|wdt:P9|wdt:P1038)* entity:Q9682 .

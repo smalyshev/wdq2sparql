@@ -1,0 +1,4 @@
+(TREE[30][150][17,131] AND CLAIM[138:676555])
+?tree1 (wdt:P150)* ?item .
+?tree1 (wdt:P17|wdt:P131)* entity:Q30 .
+?item wdt:P138 entity:Q676555 .

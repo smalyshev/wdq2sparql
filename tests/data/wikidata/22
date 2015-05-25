@@ -1,0 +1,4 @@
+CLAIM[31:5] AND CLAIM[106:4294967294]
+?item wdt:P31 entity:Q5 .
+?item wdt:P106 ?unk0 .
+FILTER (isBlank(?unk0))

@@ -1,0 +1,3 @@
+CLAIM[31:5] AND CLAIM[27:801]
+?item :P31s/:P31v :Q5 .
+?item :P27s/:P27v :Q801 .

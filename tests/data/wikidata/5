@@ -1,0 +1,5 @@
+CLAIM[31:5] AND CLAIM[27:801] AND NOCLAIM[21:34,56]
+?item wdt:P31 entity:Q5 .
+?item wdt:P27 entity:Q801 .
+FILTER NOT EXISTS { ?item wdt:P21 entity:Q34 }
+FILTER NOT EXISTS { ?item wdt:P21 entity:Q56 }

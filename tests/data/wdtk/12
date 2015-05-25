@@ -1,0 +1,4 @@
+CLAIM[31:5] AND QUANTITY[5:42]
+?item :P31s/:P31v :Q5 .
+?item :P5s/:P5v ?q3 .
+FILTER ( ?q3 = 42 )

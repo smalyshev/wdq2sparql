@@ -1,0 +1,7 @@
+CLAIM[31:5] OR QUANTITY[5:10,20]
+{
+  ?item :P31s/:P31v :Q5 .
+} UNION {
+  ?item :P5s/:P5v ?q2 .
+  FILTER ( ?q2 >= 10 && ?q2 <= 20 )
+}

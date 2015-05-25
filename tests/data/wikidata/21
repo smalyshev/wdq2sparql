@@ -1,0 +1,5 @@
+NOCLAIM[31:4294967294]
+FILTER NOT EXISTS {
+  ?item wdt:P31 ?unk0 .
+  FILTER (isBlank(?unk0))
+}

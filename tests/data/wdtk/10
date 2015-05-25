@@ -1,0 +1,3 @@
+CLAIM[31:5] AND STRING[5:"TEST"]
+?item :P31s/:P31v :Q5 .
+?item :P5s/:P5v "TEST" .

@@ -1,0 +1,3 @@
+TREE[4504][171,273,75,76,77,70,71,74,89]
+?tree2 (wdt:P171|wdt:P273|wdt:P75|wdt:P76|wdt:P77|wdt:P70|wdt:P71|wdt:P74|wdt:P89)* ?item .
+BIND (entity:Q4504 AS ?tree2)

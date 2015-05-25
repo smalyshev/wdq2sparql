@@ -43,7 +43,7 @@ class Quantity extends Expression {
 			$cond = "$q = $this->from";
 		}
 
-		return "{$indent}{$this->itemName} {$syntax->propertyName($this->id)} $q .\n{$indent}FILTER { $cond }\n";
+		return "{$indent}{$this->itemName} {$syntax->propertyName($this->id)} $q .\n{$indent}FILTER ( $cond )\n";
 	}
 }
 

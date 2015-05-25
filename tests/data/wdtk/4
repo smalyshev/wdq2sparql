@@ -1,0 +1,4 @@
+CLAIM[31:5] AND CLAIM[27:801] AND NOCLAIM[21]
+?item :P31s/:P31v :Q5 .
+?item :P27s/:P27v :Q801 .
+FILTER NOT EXISTS { ?item :P21s/:P21v ?dummy0 }

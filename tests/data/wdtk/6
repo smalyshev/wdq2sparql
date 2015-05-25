@@ -1,0 +1,7 @@
+CLAIM[31:5] OR CLAIM[27:801] AND CLAIM[45:37]
+{
+  ?item :P31s/:P31v :Q5 .
+} UNION {
+  ?item :P27s/:P27v :Q801 .
+}
+?item :P45s/:P45v :Q37 .
