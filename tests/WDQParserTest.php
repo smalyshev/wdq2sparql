@@ -1,5 +1,5 @@
 <?php
-require_once '../WDQ.php';
+require_once __DIR__.'/../WDQ.php';
 
 use Sparql\Syntax\Wikidata;
 use Sparql\Syntax\WDTK;
