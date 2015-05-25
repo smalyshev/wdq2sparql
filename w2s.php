@@ -9,8 +9,8 @@ if(!empty($_POST['wdq'])) {
 	if(!$parsed) {
 		$text = "Failed to parse the query";
 	} else {
-		$klass = $_POST['syntax']."Syntax";
-		if(class_exists($klass) && is_a($klass, "SparqlSyntax", true)) {
+		$klass = "Sparql\\Syntax\\".$_POST['syntax'];
+		if(class_exists($klass) && is_a($klass, "Sparql\\Syntax", true)) {
 			$syntax = new $klass;
 			$exp = $parser->generate($parsed, "?item");
 			$sparql = $exp->emit($syntax, '  ');
@@ -69,7 +69,7 @@ Translation to SPARQL:<br>
 <pre>
 <?= htmlentities($text); ?>
 </pre>
-<?php if($run) { 
+<?php if($run) {
 	$runURLs = array('Wikidata' => 'http://wdqs-beta.wmflabs.org/#', "WDTK" => 'http://milenio.dcc.uchile.cl/sparql?query=');
 ?>
 <a target="_blank" href=" <?=$runURLs[$_POST['syntax']].rawurlencode($text); ?>">Run this query!</a>
