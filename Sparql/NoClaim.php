@@ -14,9 +14,11 @@ class NoClaim extends Expression {
 	public function emit( Syntax $syntax, $indent = "" ) {
 		$sub = $this->value->emit($syntax, $indent."  ");
 		if($sub) {
+			// Not sure if the non-sub syntax would work here as well?
 			return "{$indent}FILTER NOT EXISTS {\n{$indent}  {$this->itemName} {$syntax->propertyName($this->id)} {$this->value->getVarName($syntax)} .\n$sub{$indent}}\n";
 		} else {
-			return "{$indent}FILTER NOT EXISTS { {$this->itemName} {$syntax->propertyName($this->id)} {$this->value->getVarName($syntax)} }\n";
+			$dummy = $this->value->getVarName($syntax) ;
+			return "{$indent}OPTIONAL { {$this->itemName} {$syntax->propertyName($this->id)} {$dummy} }\n{$indent}FILTER(!bound({$dummy}))\n";
 		}
 	}
 }
