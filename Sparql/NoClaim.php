@@ -16,7 +16,8 @@ class NoClaim extends Expression {
 		if($sub) {
 			return "{$indent}FILTER NOT EXISTS {\n{$indent}  {$this->itemName} {$syntax->propertyName($this->id)} {$this->value->getVarName($syntax)} .\n$sub{$indent}}\n";
 		} else {
-			return "{$indent}FILTER NOT EXISTS { {$this->itemName} {$syntax->propertyName($this->id)} {$this->value->getVarName($syntax)} }\n";
+			$dummy = $this->value->getVarName($syntax) ;
+			return "{$indent}OPTIONAL { {$this->itemName} {$syntax->propertyName($this->id)} {$dummy} }\n{$indent}FILTER(!bound({$dummy}))\n";
 		}
 	}
 }

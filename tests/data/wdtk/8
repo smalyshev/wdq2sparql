@@ -3,6 +3,8 @@ CLAIM[31:5] AND (CLAIM[27:801] OR NOCLAIM[1:23,45])
 {
   ?item :P27s/:P27v :Q801 .
 } UNION {
-  FILTER NOT EXISTS { ?item :P1s/:P1v :Q23 }
-  FILTER NOT EXISTS { ?item :P1s/:P1v :Q45 }
+  OPTIONAL { ?item :P1s/:P1v :Q23 }
+  FILTER(!bound(:Q23))
+  OPTIONAL { ?item :P1s/:P1v :Q45 }
+  FILTER(!bound(:Q45))
 }

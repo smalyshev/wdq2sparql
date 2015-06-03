@@ -3,6 +3,8 @@ CLAIM[31:5] AND (CLAIM[27:801] OR NOCLAIM[1:23,45])
 {
   ?item wdt:P27 entity:Q801 .
 } UNION {
-  FILTER NOT EXISTS { ?item wdt:P1 entity:Q23 }
-  FILTER NOT EXISTS { ?item wdt:P1 entity:Q45 }
+  OPTIONAL { ?item wdt:P1 entity:Q23 }
+  FILTER(!bound(entity:Q23))
+  OPTIONAL { ?item wdt:P1 entity:Q45 }
+  FILTER(!bound(entity:Q45))
 }

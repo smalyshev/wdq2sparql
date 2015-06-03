@@ -6,4 +6,5 @@ CLAIM[31:5,67] OR CLAIM[27:801] AND NOCLAIM[45]
 } UNION {
   ?item :P27s/:P27v :Q801 .
 }
-FILTER NOT EXISTS { ?item :P45s/:P45v ?dummy0 }
+OPTIONAL { ?item :P45s/:P45v ?dummy0 }
+FILTER(!bound(?dummy0))
