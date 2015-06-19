@@ -31,7 +31,7 @@ if(!empty($_POST['wdq'])) {
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link href="http://tools.wmflabs.org/magnustools/resources/css/bootstrap.min.css" rel="stylesheet">
+<link href="//tools-static.wmflabs.org/cdnjs/ajax/libs/twitter-bootstrap/2.3.1/css/bootstrap.min.css" rel="stylesheet">
 <title>WDQ2SPARQL</title>
 </head>
 <body style="margin: 10px">
