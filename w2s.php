@@ -70,7 +70,7 @@ Translation to SPARQL:<br>
 <?= htmlentities($text); ?>
 </pre>
 <?php if($run) {
-	$runURLs = array('Wikidata' => 'http://wdqs-beta.wmflabs.org/#', "WDTK" => 'http://milenio.dcc.uchile.cl/sparql?query=');
+	$runURLs = array('Wikidata' => 'http://query.wikidata.org/#', "WDTK" => 'http://milenio.dcc.uchile.cl/sparql?query=');
 ?>
 <a target="_blank" href=" <?=$runURLs[$_POST['syntax']].rawurlencode($text); ?>">Run this query!</a>
 <?php } ?>
