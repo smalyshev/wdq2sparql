@@ -121,7 +121,7 @@ ENDG;
 				if($op && !$op->isBranch()) {
 					$left = $this->generate($tree->getSubnode(0), $itemName);
 					$right = $this->generate($tree->getSubnode(2), $itemName);
-					if($op->getContent() == "OR") {
+					if( strtoupper($op->getContent()) == "OR") {
 						return Union::addTwo($left, $right);
 					} else {
 						// AND
