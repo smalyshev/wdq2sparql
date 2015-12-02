@@ -24,5 +24,11 @@ interface Syntax {
 	 * @param string $var
 	 */
 	function isUnknown( $var );
+
+	/**
+	 * Var is an item (any item)
+	 * @param string $var
+	 */
+	function isItem( $var );
 }
 

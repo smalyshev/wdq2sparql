@@ -14,6 +14,7 @@ use Sparql\Between;
 use Sparql\Quantity;
 use Sparql\Tree;
 use Sparql\Unknown;
+use Sparql\AnyItem;
 
 /**
  * Main WDQ parser class
@@ -34,9 +35,11 @@ ExpressionPart
 
 Clause :=> ( Claim | NoClaim | String | Between | Quantity | Tree | Web) .
 
-Claim :=> "CLAIM[" Number (":" Item+",")? "]" .
+Claim :=> "CLAIM[" Propvalue+"," "]" .
 
-NoClaim :=> "NOCLAIM[" Number (":" Item+",")? "]" .
+NoClaim :=> "NOCLAIM[" Propvalue+"," "]" .
+
+Propvalue :=> Number ( ":" Item )? .
 
 Item :=> (Number | "(" Expression ")" ) .
 
@@ -136,30 +139,43 @@ ENDG;
 				}
 				break;
 			case 'claim':
-				$pid = $tree->getSubnode(1)->getLeftLeaf()->getContent();
 				$items = array();
-				foreach($tree->findAll('Item') as $item) {
-					$items[] = new Claim($itemName, $pid, $this->generateItem($item) );
+				foreach($tree->getSubnode(1)->findAll('Propvalue') as $prop) {
+					$pid = $prop->getSubnode(0)->getLeftLeaf()->getContent();
+					$item = $prop->getSubnode(1);
+					if(!$item->isBranch()) {
+						$items[] = new Claim($itemName, $pid, new Subquery("?dummy".$this->counter++) );
+					} else {
+						$item = $item->getSubnode(1);
+						$items[] = new Claim($itemName, $pid, $this->generateItem($item) );
+					}
 				}
 				if(!$items) {
-					return new Claim($itemName, $pid, new Subquery("?dummy".$this->counter++) );
+					throw new Exception("No items found for claim");
 				}
 				if(count($items) == 1) {
 					return $items[0];
 				}
 				return new Union($items);
 			case 'noclaim':
-				$pid = $tree->getSubnode(1)->getLeftLeaf()->getContent();
 				$items = array();
-				foreach($tree->findAll('Item') as $item) {
-					$items[] = new NoClaim($itemName, $pid, $this->generateItem($item) );
+				foreach($tree->getSubnode(1)->findAll('Propvalue') as $prop) {
+					$pid = $prop->getSubnode(0)->getLeftLeaf()->getContent();
+					$item = $prop->getSubnode(1);
+					if(!$item->isBranch()) {
+						$items[] = new NoClaim($itemName, $pid, new Subquery("?dummy".$this->counter++) );
+					} else {
+						$item = $item->getSubnode(1);
+						$items[] = new NoClaim($itemName, $pid, $this->generateItem($item) );
+					}
 				}
 				if(!$items) {
-					return new NoClaim($itemName, $pid, new Subquery("?dummy".$this->counter++) );
+					throw new Exception("No items found for claim");
 				}
 				if(count($items) == 1) {
 					return $items[0];
 				}
+				array_unshift($items, new AnyItem($itemName));
 				return new AndClause($items);
 			case 'string':
 				$pid = $tree->getSubnode(1)->getLeftLeaf()->getContent();

@@ -1,0 +1,6 @@
+CLAIM[17:30,17:16]
+{
+  ?item :P17s/:P17v entity:Q30 .
+} UNION {
+  ?item :P17s/:P17v entity:Q16 .
+}

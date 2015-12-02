@@ -1,4 +1,3 @@
 CLAIM[138:676555] AND NOCLAIM[31:515]
 ?item wdt:P138 entity:Q676555 .
-OPTIONAL { ?item wdt:P31 entity:Q515 }
-FILTER(!bound(entity:Q515))
+MINUS { ?item wdt:P31 entity:Q515 }

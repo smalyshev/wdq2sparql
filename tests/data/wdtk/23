@@ -1,0 +1,6 @@
+CLAIM[31,279]
+{
+  ?item :P31s/:P31v ?dummy0 .
+} UNION {
+  ?item :P279s/:P279v ?dummy1 .
+}

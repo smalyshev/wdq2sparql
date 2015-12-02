@@ -1,4 +1,3 @@
 CLAIM[138:676555] AND NOCLAIM[31:515]
 ?item :P138s/:P138v :Q676555 .
-OPTIONAL { ?item :P31s/:P31v :Q515 }
-FILTER(!bound(:Q515))
+MINUS { ?item :P31s/:P31v :Q515 }

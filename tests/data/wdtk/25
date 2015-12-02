@@ -1,0 +1,9 @@
+CLAIM[31,279] AND NOCLAIM[45,67:89]
+{
+  ?item :P31s/:P31v ?dummy0 .
+} UNION {
+  ?item :P279s/:P279v ?dummy1 .
+}
+OPTIONAL { ?item :P45s/:P45v ?dummy2 }
+FILTER(!bound(?dummy2))
+MINUS { ?item :P67s/:P67v :Q89 }

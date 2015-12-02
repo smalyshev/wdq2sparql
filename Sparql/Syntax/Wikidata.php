@@ -21,5 +21,9 @@ class Wikidata implements Syntax {
 	public function isUnknown( $var ) {
 		return "isBlank({$var})";
 	}
+
+	public function isItem( $var ) {
+		return "{$var} <http://schema.org/version> _:v .";
+	}
 }
 

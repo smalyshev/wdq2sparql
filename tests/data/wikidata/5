@@ -1,7 +1,5 @@
-CLAIM[31:5] AND CLAIM[27:801] AND NOCLAIM[21:34,56]
+CLAIM[31:5] AND CLAIM[27:801] AND NOCLAIM[21:34,21:56]
 ?item wdt:P31 entity:Q5 .
 ?item wdt:P27 entity:Q801 .
-OPTIONAL { ?item wdt:P21 entity:Q34 }
-FILTER(!bound(entity:Q34))
-OPTIONAL { ?item wdt:P21 entity:Q56 }
-FILTER(!bound(entity:Q56))
+MINUS { ?item wdt:P21 entity:Q34 }
+MINUS { ?item wdt:P21 entity:Q56 }

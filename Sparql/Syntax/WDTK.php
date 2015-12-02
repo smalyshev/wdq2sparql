@@ -20,4 +20,8 @@ class WDTK implements Syntax {
 	public function isUnknown( $var ) {
 		return "{$var} = {$this->entityName('4294967294')}";
 	}
+
+	public function isItem( $var ) {
+		return "{$var} a <http://www.wikidata.org/ontology#Item> .";
+	}
 }

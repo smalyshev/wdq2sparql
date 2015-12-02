@@ -15,6 +15,10 @@ abstract class Collection extends Expression {
 		$this->items[] = $ex;
 	}
 
+	public function merge( Collection $c2 ) {
+		$this->items = array_merge($this->items, $c2->items);
+	}
+
 	/**
 	 * Emit all contained expressions
 	 * @param Syntax $syntax
@@ -34,9 +38,16 @@ abstract class Collection extends Expression {
 	 * @return \Sparql\Collection
 	 */
 	public static function addTwo( Expression $ex1, Expression $ex2 ) {
-		if ( $ex1 instanceof static ) {
+		if( $ex1 instanceof static && $ex2 instanceof static ) {
+			$ex1->merge( $ex2 );
+			return $ex1;
+		} else if( $ex1 instanceof static ) {
 			$ex1->add( $ex2 );
 			return $ex1;
+		} else if( $ex2 instanceof static ) {
+			$ex = new static( array ($ex1) );
+			$ex->merge($ex2);
+			return $ex;
 		}
 		return new static( array ($ex1,$ex2) );
 	}
