@@ -1,9 +1,9 @@
 CLAIM[31:5] AND CLAIM[27:801] OR NOCLAIM[1:23,1:45]
 {
-  ?item wdt:P31 entity:Q5 .
-  ?item wdt:P27 entity:Q801 .
+  ?item wdt:P31 wd:Q5 .
+  ?item wdt:P27 wd:Q801 .
 } UNION {
   ?item <http://schema.org/version> _:v .
-  MINUS { ?item wdt:P1 entity:Q23 }
-  MINUS { ?item wdt:P1 entity:Q45 }
+  MINUS { ?item wdt:P1 wd:Q23 }
+  MINUS { ?item wdt:P1 wd:Q45 }
 }

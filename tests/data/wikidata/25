@@ -6,4 +6,4 @@ CLAIM[31,279] AND NOCLAIM[45,67:89]
 }
 OPTIONAL { ?item wdt:P45 ?dummy2 }
 FILTER(!bound(?dummy2))
-MINUS { ?item wdt:P67 entity:Q89 }
+MINUS { ?item wdt:P67 wd:Q89 }

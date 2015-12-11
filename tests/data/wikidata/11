@@ -1,6 +1,6 @@
 CLAIM[31:5] OR QUANTITY[5:10,20]
 {
-  ?item wdt:P31 entity:Q5 .
+  ?item wdt:P31 wd:Q5 .
 } UNION {
   ?item wdt:P5 ?q0 .
   FILTER ( ?q0 >= 10 && ?q0 <= 20 )

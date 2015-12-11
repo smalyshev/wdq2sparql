@@ -1,10 +1,10 @@
 CLAIM[31:5,31:67] OR CLAIM[27:801] AND NOCLAIM[45]
 {
-  ?item wdt:P31 entity:Q5 .
+  ?item wdt:P31 wd:Q5 .
 } UNION {
-  ?item wdt:P31 entity:Q67 .
+  ?item wdt:P31 wd:Q67 .
 } UNION {
-  ?item wdt:P27 entity:Q801 .
+  ?item wdt:P27 wd:Q801 .
 }
 OPTIONAL { ?item wdt:P45 ?dummy0 }
 FILTER(!bound(?dummy0))

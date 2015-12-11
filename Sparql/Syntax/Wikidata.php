@@ -7,7 +7,7 @@ class Wikidata implements Syntax {
 
 	public function getPrefixes() {
 		return array("wdt" => "http://www.wikidata.org/prop/direct/",
-				"entity" =>  "http://www.wikidata.org/entity/");
+				"wd" =>  "http://www.wikidata.org/entity/");
 	}
 
 	public function propertyName( $id ) {
@@ -15,7 +15,7 @@ class Wikidata implements Syntax {
 	}
 
 	public function entityName( $id ) {
-		return "entity:Q{$id}";
+		return "wd:Q{$id}";
 	}
 
 	public function isUnknown( $var ) {

@@ -1,4 +1,4 @@
 CLAIM[31:5] AND BETWEEN[5,+00000001861-03-17T00:00:00Z]
-?item wdt:P31 entity:Q5 .
+?item wdt:P31 wd:Q5 .
 ?item wdt:P5 ?time1 .
 FILTER ( ?time1 >= "1861-03-17T00:00:00Z"^^xsd:dateTime )

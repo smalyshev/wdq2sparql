@@ -1,2 +1,2 @@
 CLAIM[31:5]
-?item wdt:P31 entity:Q5 .
+?item wdt:P31 wd:Q5 .
