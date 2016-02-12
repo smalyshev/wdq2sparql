@@ -3,15 +3,15 @@ $text = "Nothing yet...";
 $run = false;
 $status = 200;
 ini_set('xdebug.max_nesting_level', 10000);
-if(!empty($_POST['wdq'])) {
+if(!empty($_REQUEST['wdq'])) {
 	require_once __DIR__.'/WDQ.php';
 	$parser = new WDQParser();
-	$parsed = $parser->parse($_POST['wdq']);
+	$parsed = $parser->parse($_REQUEST['wdq']);
 	if(!$parsed) {
 		$text = "Failed to parse the query";
 		$status = 400;
 	} else {
-		$syntax = preg_replace("/[^a-zA-Z]/", "",$_POST['syntax']);
+		$syntax = preg_replace("/[^a-zA-Z]/", "",$_REQUEST['syntax']);
 		if(!$syntax) {
 			$syntax = "Wikidata";
 		}
