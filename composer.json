@@ -8,6 +8,10 @@
 	"require": {
 		"farafiri/PHP-parsing-tool": "dev-master"
 	},
+        "require-dev": {
+                "phpunit/phpunit": "4.6.*"
+        },
+ 
 	"autoload": {
         "psr-4": {"Sparql\\": "Sparql/"}
     }
