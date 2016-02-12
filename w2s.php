@@ -1,6 +1,7 @@
 <?php
 $text = "Nothing yet...";
 $run = false;
+$status = 200;
 ini_set('xdebug.max_nesting_level', 10000);
 if(!empty($_POST['wdq'])) {
 	require_once __DIR__.'/WDQ.php';
@@ -8,8 +9,13 @@ if(!empty($_POST['wdq'])) {
 	$parsed = $parser->parse($_POST['wdq']);
 	if(!$parsed) {
 		$text = "Failed to parse the query";
+		$status = 400;
 	} else {
-		$klass = "Sparql\\Syntax\\".$_POST['syntax'];
+		$syntax = preg_replace("/[^a-zA-Z]", "",$_POST['syntax']);
+		if($syntax) {
+			$syntax = "Wikidata";
+		}
+		$klass = "Sparql\\Syntax\\$syntax";
 		if(class_exists($klass) && is_a($klass, "Sparql\\Syntax", true)) {
 			$syntax = new $klass;
 			$exp = $parser->generate($parsed, "?item");
@@ -21,7 +27,13 @@ if(!empty($_POST['wdq'])) {
 			$text .= "SELECT ?item WHERE {\n$sparql}";
 			$run = true;
 		} else {
-			$text = "Unknown syntax $klass";
+			$text = "Unknown syntax";
+			$status = 400;
+		}
+		if(empty($_POST['gui'])) {
+			http_response_code($status);
+			echo $text;
+			exit();
 		}
 	}
 }
@@ -53,6 +65,7 @@ Not supported yet:<br>
 </ul>
 </div>
 <form action="w2s.php" method="POST">
+<input type="hidden" name="gui" value="1">
 Please enter WDQ query:<br>
 <textarea cols="80" rows="10" name="wdq" style="width: 40em">
 <?= @$_POST['wdq']; ?>
