@@ -11,8 +11,8 @@ if(!empty($_POST['wdq'])) {
 		$text = "Failed to parse the query";
 		$status = 400;
 	} else {
-		$syntax = preg_replace("/[^a-zA-Z]", "",$_POST['syntax']);
-		if($syntax) {
+		$syntax = preg_replace("/[^a-zA-Z]/", "",$_POST['syntax']);
+		if(!$syntax) {
 			$syntax = "Wikidata";
 		}
 		$klass = "Sparql\\Syntax\\$syntax";
