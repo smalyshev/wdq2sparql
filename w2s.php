@@ -33,6 +33,7 @@ if(!empty($_REQUEST['wdq'])) {
 		if(empty($_POST['gui'])) {
 			// Labs runs 5.3, 5.3 does not have http_response_code(). Sad.
 			header("HTTP/1.0 $status Banana");
+			header("Content-type: text/plain");
 			echo $text;
 			exit();
 		}
