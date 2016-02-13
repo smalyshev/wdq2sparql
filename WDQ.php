@@ -15,6 +15,8 @@ use Sparql\Quantity;
 use Sparql\Tree;
 use Sparql\Unknown;
 use Sparql\AnyItem;
+use Sparql\Link;
+use Sparql\NoLink;
 
 /**
  * Main WDQ parser class
@@ -33,7 +35,7 @@ ExpressionPart
 		:=> Clause
 		:=> "(" Expression ")" .
 
-Clause :=> ( Claim | NoClaim | String | Between | Quantity | Tree | Web) .
+Clause :=> ( Claim | NoClaim | String | Between | Quantity | Tree | Web | Link | NoLink ) .
 
 Claim :=> "CLAIM[" Propvalue+"," "]" .
 
@@ -57,6 +59,10 @@ Quantity :=> "QUANTITY[" Number ":" Number ("," Number)? "]".
 Tree :=> "TREE[" Item+"," "][" PropList? "]" ("[" PropList? "]")? .
 
 Web :=> "WEB[" Item+"," "][" PropList? "]" .
+
+Link :=> "LINK[" /\w+/ "]" .
+
+NoLink :=> "NOLINK[" /\w+/ "]" .
 
 PropList :=> Number+"," .
 
@@ -249,6 +255,12 @@ ENDG;
 					return $items[0];
 				}
 				return new Union($items);
+			case 'link':
+				$wiki = $tree->getSubnode(1)->getLeftLeaf()->getContent();
+				return new Link($itemName, $wiki);
+			case 'nolink':
+				$wiki = $tree->getSubnode(1)->getLeftLeaf()->getContent();
+				return new NoLink($itemName, $wiki);
 			default:
 				throw new Exception("Unknown type {$tree->getType()}");
 		}

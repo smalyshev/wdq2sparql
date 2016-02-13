@@ -9,5 +9,21 @@ abstract class Expression {
 	 * @param SparqlSyntax $syntax Syntax engine to use
 	 */
 	abstract function emit(Syntax $syntax);
+
+	protected static $counters = array();
+
+	public function counterVar($name) {
+		if(!isset(self::$counters[$name])) {
+			self::$counters[$name] = $no = 0;
+		} else {
+			$no = ++self::$counters[$name];
+		}
+		return "?{$name}{$no}";
+	}
+
+	public function getLastVar($name) {
+		$no = self::$counters[$name];
+		return "?{$name}{$no}";
+	}
 }
 

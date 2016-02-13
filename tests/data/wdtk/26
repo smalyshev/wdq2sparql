@@ -1,0 +1,9 @@
+CLAIM[31:5] AND LINK[dewiki] AND NOLINK[enwiki]
+?item :P31s/:P31v :Q5 .
+?wiki0 <http://schema.org/about> ?item .
+FILTER(SUBSTR(STR(?wiki0),1,24) = 'https://de.wikipedia.org') .
+OPTIONAL {
+  ?wiki1 <http://schema.org/about> ?item .
+  FILTER(SUBSTR(STR(?wiki1),1,24) = 'https://en.wikipedia.org') .
+}
+FILTER(!bound(?wiki1))

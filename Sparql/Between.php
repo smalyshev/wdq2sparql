@@ -6,7 +6,6 @@ namespace Sparql;
  */
 class Between extends Expression {
 	private $itemName;
-	private static $timeCounter = 0;
 	private $from;
 	private $to;
 
@@ -42,7 +41,7 @@ class Between extends Expression {
 
 	public function emit( Syntax $syntax, $indent = "" ) {
 		$cond = array ();
-		$tm = "?time" . self::$timeCounter ++;
+		$tm = $this->counterVar("time");
 
 		if ( !is_null( $this->from ) ) {
 			$d = $this->fixDate( $this->from );

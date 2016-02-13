@@ -8,7 +8,6 @@ class Tree extends Expression {
 	private $itemName;
 	private $forward;
 	private $backward;
-	private static $treeCounter = 0;
 
 	public function __construct( $item, $id, $forward, $back ) {
 		$this->itemName = $item;
@@ -20,7 +19,7 @@ class Tree extends Expression {
 	public function emit( Syntax $syntax, $indent = "" ) {
 		$res = "";
 		if ( $this->forward ) {
-			$treeVar = "?tree" . self::$treeCounter ++;
+			$treeVar = $this->counterVar("tree");
 			$propNames = join( "|", array_map( array ($syntax,"propertyName"
 			), $this->forward ) );
 			$res .= "{$indent}$treeVar ($propNames)* {$this->itemName} .\n";

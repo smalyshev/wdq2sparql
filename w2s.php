@@ -57,13 +57,13 @@ Supported syntax:<br>
 <li>quantity/between/string
 <li>and/or
 <li>Subqueries within claim/noclaim
+<li>link/nolink
 </ul>
 Not supported yet:<br>
 <ul>
 <li>Subqueries within tree/web
 <li>around
 <li>qualifiers
-<li>link
 </ul>
 </div>
 <form action="w2s.php" method="POST">
