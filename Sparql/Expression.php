@@ -6,7 +6,8 @@ namespace Sparql;
 abstract class Expression {
 	/**
 	 * Produce output for this expression
-	 * @param SparqlSyntax $syntax Syntax engine to use
+	 * @param Syntax $syntax Syntax engine to use
+	 * @return string
 	 */
 	abstract function emit(Syntax $syntax);
 

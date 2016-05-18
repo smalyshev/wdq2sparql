@@ -1,0 +1,6 @@
+AROUND[625,52.205,0.119,15]
+SERVICE wikibase:around {
+      ?item wdt:P625 ?item_location .
+      bd:serviceParam wikibase:center "Point(0.119 52.205)"^^geo:wktLiteral .
+      bd:serviceParam wikibase:radius "15" .
+}

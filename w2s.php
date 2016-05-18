@@ -58,11 +58,11 @@ Supported syntax:<br>
 <li>and/or
 <li>Subqueries within claim/noclaim
 <li>link/nolink
+<li>around
 </ul>
 Not supported yet:<br>
 <ul>
 <li>Subqueries within tree/web
-<li>around
 <li>qualifiers
 </ul>
 </div>

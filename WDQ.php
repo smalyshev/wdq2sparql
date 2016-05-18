@@ -17,6 +17,7 @@ use Sparql\Unknown;
 use Sparql\AnyItem;
 use Sparql\Link;
 use Sparql\NoLink;
+use Sparql\GeoAround;
 
 /**
  * Main WDQ parser class
@@ -35,7 +36,7 @@ ExpressionPart
 		:=> Clause
 		:=> "(" Expression ")" .
 
-Clause :=> ( Claim | NoClaim | String | Between | Quantity | Tree | Web | Link | NoLink ) .
+Clause :=> ( Claim | NoClaim | String | Between | Quantity | Tree | Web | Link | NoLink | Around ) .
 
 Claim :=> "CLAIM[" Propvalue+"," "]" .
 
@@ -54,6 +55,8 @@ BetweenParams
 		:=> "," Date
 		:=> Date "," Date .
 
+Around :=> "AROUND[" Number "," Float "," Float "," Float "]" .
+
 Quantity :=> "QUANTITY[" Number ":" Number ("," Number)? "]".
 
 Tree :=> "TREE[" Item+"," "][" PropList? "]" ("[" PropList? "]")? .
@@ -69,6 +72,7 @@ PropList :=> Number+"," .
 Number :=> /\d+/ .
 LiteralString :=> /"[^"]*?"/ .
 Date :=> /[+-]?\d+(-\d{2}(-\d{2}(T\d{2}:\d{2}:\d{2}Z)?)?)?/ .
+Float :=> /\d+(\.\d+)?/
 ENDG;
 
 	/**
@@ -261,6 +265,12 @@ ENDG;
 			case 'nolink':
 				$wiki = $tree->getSubnode(1)->getLeftLeaf()->getContent();
 				return new NoLink($itemName, $wiki);
+			case 'around':
+				$pid = $tree->getSubnode(1)->getLeftLeaf()->getContent();
+				$lat = $tree->getSubnode(3)->getLeftLeaf()->getContent();
+				$lon = $tree->getSubnode(5)->getLeftLeaf()->getContent();
+				$radius = $tree->getSubnode(7)->getLeftLeaf()->getContent();
+				return new GeoAround($itemName, $pid, $lat, $lon, $radius);
 			default:
 				throw new Exception("Unknown type {$tree->getType()}");
 		}
