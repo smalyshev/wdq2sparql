@@ -6,8 +6,9 @@ use Sparql\Syntax;
 class Wikidata implements Syntax {
 
 	public function getPrefixes() {
-		return array("wdt" => "http://www.wikidata.org/prop/direct/",
-				"wd" =>  "http://www.wikidata.org/entity/");
+		return array();
+//		return array("wdt" => "http://www.wikidata.org/prop/direct/",
+//				"wd" =>  "http://www.wikidata.org/entity/");
 	}
 
 	public function propertyName( $id ) {
