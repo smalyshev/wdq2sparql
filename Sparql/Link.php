@@ -11,23 +11,29 @@ class Link extends Expression {
 	 */
 	private $itemName;
 
+	/**
+	 * @var array
+	 */
 	protected static $wikis;
+
+	private $wiki;
 
 	private function getWikiURL($wiki) {
 		if(empty(self::$wikis)) {
+			$wikis = [];
 			include __DIR__."/wikilist.php";
 			self::$wikis = $wikis;
 		}
 		if(empty(self::$wikis[$wiki])) {
 			return "UNKNOWN_WIKI";
 		}
-		return self::$wikis[$wiki];
+		return self::$wikis[$wiki] . '/';
 	}
 
 	/**
 	 * LINK[wiki]
 	 * @param string $item parent item variable, e.g. ?item
-	 * @param string wiki wiki
+	 * @param string $wiki wiki
 	 */
 	public function __construct( $item, $wiki) {
 		$this->itemName = $item;
@@ -38,7 +44,7 @@ class Link extends Expression {
 		$wikiVar = $this->counterVar("wiki");
 		$wikiLen = strlen($this->wiki);
 		return "{$indent}$wikiVar <http://schema.org/about> {$this->itemName} .\n" .
-		"{$indent}FILTER(SUBSTR(STR($wikiVar),1,$wikiLen) = '{$this->wiki}') .\n";
+		"{$indent}$wikiVar <http://schema.org/isPartOf> <{$this->wiki}> .\n";
 	}
 }
 
