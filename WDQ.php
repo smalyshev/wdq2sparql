@@ -71,7 +71,7 @@ PropList :=> Number+"," .
 
 Number :=> /\d+/ .
 LiteralString :=> /"[^"]*?"/ .
-Date :=> /[+-]?\d+(-\d{2}(-\d{2}(T\d{2}:\d{2}:\d{2}Z)?)?)?/ .
+Date :=> /[+-]?\d+(-\d\d?(-\d\d?(T\d{2}:\d{2}:\d{2}Z)?)?)?/ .
 Float :=> /\d+(\.\d+)?/
 ENDG;
 

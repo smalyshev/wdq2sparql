@@ -1,0 +1,5 @@
+BETWEEN[569,1359-1,1359-12]
+SELECT ?item WHERE {
+  ?item wdt:P569 ?time0 .
+  FILTER ( ?time0 >= "1359-01-01T00:00:00Z"^^xsd:dateTime && ?time0 <= "1359-12-01T00:00:00Z"^^xsd:dateTime )
+}
