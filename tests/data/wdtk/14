@@ -1,4 +1,4 @@
 CLAIM[31:5] AND BETWEEN[5,+00000001861-03-17T00:00:00Z]
 ?item :P31s/:P31v :Q5 .
-?item :P5s/:P5v ?time4 .
-FILTER ( ?time4 >= "1861-03-17T00:00:00Z"^^xsd:dateTime )
+?item :P5s/:P5v ?time5 .
+FILTER ( ?time5 >= "1861-03-17T00:00:00Z"^^xsd:dateTime )

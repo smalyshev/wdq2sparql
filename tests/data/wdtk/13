@@ -2,6 +2,6 @@ CLAIM[31:5] OR BETWEEN[5,1880,1990-05]
 {
   ?item :P31s/:P31v :Q5 .
 } UNION {
-  ?item :P5s/:P5v ?time3 .
-  FILTER ( ?time3 >= "1880-01-01T00:00:00Z"^^xsd:dateTime && ?time3 <= "1990-05-01T00:00:00Z"^^xsd:dateTime )
+  ?item :P5s/:P5v ?time4 .
+  FILTER ( ?time4 >= "1880-01-01T00:00:00Z"^^xsd:dateTime && ?time4 <= "1990-05-01T00:00:00Z"^^xsd:dateTime )
 }
