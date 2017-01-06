@@ -1,0 +1,10 @@
+ITEMS[1,2,3]
+SELECT ?item WHERE {
+{
+    BIND(wd:Q1 as ?item)
+} UNION {
+    BIND(wd:Q2 as ?item)
+} UNION {
+    BIND(wd:Q3 as ?item)
+}
+}

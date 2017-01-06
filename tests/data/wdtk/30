@@ -1,0 +1,11 @@
+ITEMS[1,2,3]
+prefix : <http://www.wikidata.org/entity/>
+SELECT ?item WHERE {
+{
+    BIND(:Q1 as ?item)
+} UNION {
+    BIND(:Q2 as ?item)
+} UNION {
+    BIND(:Q3 as ?item)
+}
+}
