@@ -25,7 +25,7 @@ class GeoAround extends Expression
      * @param Syntax $syntax Syntax engine to use
      * @return string
      */
-    public function emit(Syntax $syntax)
+    public function emit(Syntax $syntax, $indent = "")
     {
         $service = <<<END
 SERVICE wikibase:around {

@@ -1,9 +1,9 @@
 CLAIM[31,279] AND NOCLAIM[45,67:89]
 {
-  ?item wdt:P31 ?dummy0 .
+  ?item wdt:P31 [] .
 } UNION {
-  ?item wdt:P279 ?dummy1 .
+  ?item wdt:P279 [] .
 }
-OPTIONAL { ?item wdt:P45 ?dummy2 }
-FILTER(!bound(?dummy2))
+OPTIONAL { ?item wdt:P45 ?dummy0 }
+FILTER(!bound(?dummy0))
 MINUS { ?item wdt:P67 wd:Q89 }

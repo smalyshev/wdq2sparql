@@ -1,4 +1,4 @@
 CLAIM[31:5] AND BETWEEN[5,,-10000861-03-17]
 ?item wdt:P31 wd:Q5 .
-?item wdt:P5 ?time2 .
-FILTER ( ?time2 <= "-10000861-03-17T00:00:00Z"^^xsd:dateTime )
+?item wdt:P5 ?time0 .
+FILTER ( ?time0 <= "-10000861-03-17T00:00:00Z"^^xsd:dateTime )

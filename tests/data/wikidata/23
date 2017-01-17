@@ -1,7 +1,7 @@
 CLAIM[31,279]
 {
-  ?item wdt:P31 ?dummy0 .
+  ?item wdt:P31 [] .
 } UNION {
-  ?item wdt:P279 ?dummy1 .
+  ?item wdt:P279 [] .
 }
 

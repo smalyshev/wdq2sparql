@@ -5,12 +5,6 @@ namespace Sparql;
  * WWDQ clause quantity[PROPERTY:VALUE1,VALUE2]
  */
 class Quantity extends QualifiedExpression {
-	/**
-	 * Expression running counter
-	 * @var int
-	 */
-	private static $qCounter = 0;
-
 	private $from;
 
 	private $to;
@@ -30,7 +24,7 @@ class Quantity extends QualifiedExpression {
 
 	public function emit( Syntax $syntax, $indent = "" ) {
 		$cond = array ();
-		$q = "?q" . self::$qCounter ++;
+		$q = $this->counterVar("q");
 
 		if ( !is_null( $this->to ) ) {
 			$cond = "$q >= $this->from && $q <= $this->to";

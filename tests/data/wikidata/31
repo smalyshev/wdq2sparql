@@ -2,5 +2,5 @@ STRING[39:"test"]{claim[405:58029]}
 ?item p:P39 ?item_st0 .
 ?item_st0 ps:P39 "test" .
 {
-  ?item_st0 pq:P36732 wd:Q58029 .
+  ?item_st0 pq:P405 wd:Q58029 .
 }

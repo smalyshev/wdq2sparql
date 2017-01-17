@@ -22,6 +22,10 @@ abstract class Expression {
 		return "?{$name}{$no}";
 	}
 
+	public static function resetCounters() {
+	    self::$counters = [];
+    }
+
 	public function getLastVar($name) {
 		$no = self::$counters[$name];
 		return "?{$name}{$no}";

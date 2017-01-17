@@ -9,7 +9,7 @@ class WDTK implements Syntax {
 		return array("" => "http://www.wikidata.org/entity/" );
 	}
 
-	public function propertyName( $id ) {
+	public function propertyName( $id, $type = self::TYPE_DIRECT ) {
         switch($type) {
             case self::TYPE_DIRECT:
                 return ":P{$id}s/:P{$id}v";

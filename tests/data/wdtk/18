@@ -1,4 +1,4 @@
 (TREE[30][150][17,131] AND CLAIM[138:676555])
-?tree5 (:P150s/:P150v)* ?item .
-?tree5 (:P17s/:P17v|:P131s/:P131v)* :Q30 .
+?tree0 (:P150s/:P150v)* ?item .
+?tree0 (:P17s/:P17v|:P131s/:P131v)* :Q30 .
 ?item :P138s/:P138v :Q676555 .

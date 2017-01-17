@@ -42,7 +42,8 @@ class WDQParserTest extends PHPUnit_Framework_TestCase {
 			throw new Exception("failed to parse!");
 		}
 		$sparql = $parser->generate($parsed, "?item");
-		$this->assertEquals(trim($expected), trim($sparql->emit($syntax)));
+        \Sparql\Expression::resetCounters();
+        $this->assertEquals(trim($expected), trim($sparql->emit($syntax)));
 	}
 }
 
