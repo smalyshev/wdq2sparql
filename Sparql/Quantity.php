@@ -4,12 +4,7 @@ namespace Sparql;
 /**
  * WWDQ clause quantity[PROPERTY:VALUE1,VALUE2]
  */
-class Quantity extends Expression {
-	/**
-	 * Parent item name
-	 * @var string
-	 */
-	private $itemName;
+class Quantity extends QualifiedExpression {
 	/**
 	 * Expression running counter
 	 * @var int
@@ -43,7 +38,9 @@ class Quantity extends Expression {
 			$cond = "$q = $this->from";
 		}
 
-		return "{$indent}{$this->itemName} {$syntax->propertyName($this->id)} $q .\n{$indent}FILTER ( $cond )\n";
+		return $this->directOrQualifiedValue($syntax, $this->id, $q, $indent)
+            . $this->addQualifiers($syntax, $indent)
+            . "{$indent}FILTER ( $cond )\n";
 	}
 }
 

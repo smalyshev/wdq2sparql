@@ -4,8 +4,7 @@ namespace Sparql;
 /**
  * BETWEEN[PROPERTY,BEGIN,END] WDQ clause
  */
-class Between extends Expression {
-	private $itemName;
+class Between extends QualifiedExpression {
 	private $from;
 	private $to;
 
@@ -55,6 +54,8 @@ class Between extends Expression {
 			return "";
 		}
 		$cond = join( " && ", $cond );
-		return "{$indent}{$this->itemName} {$syntax->propertyName($this->id)} $tm .\n{$indent}FILTER ( $cond )\n";
+		return $this->directOrQualifiedValue($syntax, $this->id, $tm, $indent)
+            . $this->addQualifiers($syntax, $indent)
+            . "{$indent}FILTER ( $cond )\n";
 	}
 }

@@ -1,0 +1,9 @@
+BETWEEN[569,1071-1,1071-12]{claim[580] AND noclaim[582]}
+?item p:P569 ?item_st0 .
+?item_st0 ps:P569 ?time0 .
+{
+  ?item_st0 pq:P580 [] .
+  OPTIONAL { ?item_st0 pq:P582 ?dummy1 }
+  FILTER(!bound(?dummy1))
+}
+FILTER ( ?time0 >= "1071-01-01T00:00:00Z"^^xsd:dateTime && ?time0 <= "1071-12-01T00:00:00Z"^^xsd:dateTime )

@@ -68,11 +68,11 @@ Supported syntax:<br>
 <li>Subqueries within claim/noclaim
 <li>link/nolink
 <li>around
+    <li>qualifiers
 </ul>
 Not supported yet:<br>
 <ul>
 <li>Subqueries within tree/web
-<li>qualifiers
 </ul>
 </div>
 <form action="w2s.php" method="POST">
@@ -81,10 +81,6 @@ Please enter WDQ query:<br>
 <textarea cols="80" rows="10" name="wdq" style="width: 40em">
 <?= @$_POST['wdq']; ?>
 </textarea><br>
-Syntax: <select name="syntax">
-<option label="Wikidata RDF syntax">Wikidata</option>
-<option label="WDTK Syntax">WDTK</option>
-</select><br>
 <input type="submit" value="Translate"/>
 <br clear="all">
 </form>

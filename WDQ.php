@@ -4,6 +4,7 @@ require_once __DIR__.'/vendor/autoload.php';
 use ParserGenerator\SyntaxTreeNode;
 use ParserGenerator\Parser;
 use Sparql\AndClause;
+use Sparql\Qualifiers;
 use Sparql\Subquery;
 use Sparql\Item;
 use Sparql\Union;
@@ -38,7 +39,7 @@ ExpressionPart
 
 Clause :=> ( Claim | NoClaim | String | Between | Quantity | Tree | Web | Link | NoLink | Around ) .
 
-Claim :=> "CLAIM[" Propvalue+"," "]" .
+Claim :=> "CLAIM[" Propvalue+"," "]" ( "{" Expression "}" )?.
 
 NoClaim :=> "NOCLAIM[" Propvalue+"," "]" .
 
@@ -46,9 +47,9 @@ Propvalue :=> Number ( ":" Item )? .
 
 Item :=> (Number | "(" Expression ")" ) .
 
-String :=> "STRING[" Number ":" LiteralString+"," "]" .
+String :=> "STRING[" Number ":" LiteralString+"," "]" ( "{" Expression "}" )?.
 
-Between :=> "BETWEEN[" Number "," BetweenParams "]" .
+Between :=> "BETWEEN[" Number "," BetweenParams "]" ( "{" Expression "}" )?.
 
 BetweenParams
 		:=> Date
@@ -57,7 +58,7 @@ BetweenParams
 
 Around :=> "AROUND[" Number "," Float "," Float "," Float "]" .
 
-Quantity :=> "QUANTITY[" Number ":" Number ("," Number)? "]".
+Quantity :=> "QUANTITY[" Number ":" Number ("," Number)? "]" ( "{" Expression "}" )?.
 
 Tree :=> "TREE[" Item+"," "][" PropList? "]" ("[" PropList? "]")? .
 
@@ -108,6 +109,21 @@ ENDG;
 		}
 	}
 
+	protected function getQualifiers(SyntaxTreeNode\Branch $tree, $itemName, $position, &$qname)
+    {
+        if($tree->getSubnode($position)->isBranch()) {
+            $qname = $itemName."_st".$this->counter++;
+            return $this->generate($tree->getSubnode($position)->getSubnode(1), $qname);
+        }
+        return null;
+    }
+
+    /**
+     * @param SyntaxTreeNode\Branch $tree
+     * @param $itemName
+     * @return \Sparql\Expression
+     * @throws Exception
+     */
 	public function generate(SyntaxTreeNode\Branch $tree, $itemName)
 	{
 		$res = "";
@@ -150,15 +166,22 @@ ENDG;
 				break;
 			case 'claim':
 				$items = array();
+				$qualifiers = $this->getQualifiers($tree, $itemName, 3, $qname );
 				foreach($tree->getSubnode(1)->findAll('Propvalue') as $prop) {
 					$pid = $prop->getSubnode(0)->getLeftLeaf()->getContent();
 					$item = $prop->getSubnode(1);
 					if(!$item->isBranch()) {
-						$items[] = new Claim($itemName, $pid, new Subquery("?dummy".$this->counter++) );
+                        $newItem = new Claim($itemName, $pid, new Subquery("[]") );
 					} else {
 						$item = $item->getSubnode(1);
-						$items[] = new Claim($itemName, $pid, $this->generateItem($item) );
+                        $newItem = new Claim($itemName, $pid, $this->generateItem($item) );
 					}
+                    if(!empty($qualifiers)) {
+                        $qualifierExpr = new Qualifiers($itemName, $pid, $qname, $qualifiers);
+                        $newItem->setQualifiers($qualifierExpr);
+                    }
+
+                    $items[] = $newItem;
 				}
 				if(!$items) {
 					throw new Exception("No items found for claim");
@@ -188,10 +211,18 @@ ENDG;
 				array_unshift($items, new AnyItem($itemName));
 				return new AndClause($items);
 			case 'string':
-				$pid = $tree->getSubnode(1)->getLeftLeaf()->getContent();
+                $pid = $tree->getSubnode(1)->getLeftLeaf()->getContent();
+                $qualifiers = $this->getQualifiers($tree, $itemName, 5, $qname );
+                if(!empty($qualifiers)) {
+                    $qualifierExpr = new Qualifiers($itemName, $pid, $qname, $qualifiers);
+                }
 				$items = array();
 				foreach($tree->findAll('LiteralString') as $item) {
-					$items[] = new StringLiteral($itemName, $pid, $item->getLeftLeaf()->getContent());
+					$newItem = new StringLiteral($itemName, $pid, $item->getLeftLeaf()->getContent());
+					if(!empty($qualifierExpr)) {
+                        $newItem->setQualifiers($qualifierExpr);
+                    }
+                    $items[] = $newItem;
 				}
 				if(count($items) == 1) {
 					return $items[0];
@@ -199,19 +230,30 @@ ENDG;
 				return new Union($items);
 			case 'between':
 				$pid = $tree->getSubnode(1)->getLeftLeaf()->getContent();
+                $qualifiers = $this->getQualifiers($tree, $itemName, 5, $qname );
+                if(!empty($qualifiers)) {
+                    $qualifierExpr = new Qualifiers($itemName, $pid, $qname, $qualifiers);
+                }
 				$numbers = $tree->getSubnode(3);
 				$subnumbers = $numbers->getSubnodes();
 				switch(count($subnumbers)) {
 					case 1:
-						return new Between($itemName, $pid, $subnumbers[0]->getLeftLeaf()->getContent() );
+						$newItem = new Between($itemName, $pid, $subnumbers[0]->getLeftLeaf()->getContent() );
+						break;
 					case 2:
-						return new Between($itemName, $pid, null, $subnumbers[1]->getLeftLeaf()->getContent() );
+                        $newItem = new Between($itemName, $pid, null, $subnumbers[1]->getLeftLeaf()->getContent() );
+                        break;
 					case 3:
-						return new Between($itemName, $pid, $subnumbers[0]->getLeftLeaf()->getContent(),
+                        $newItem = new Between($itemName, $pid, $subnumbers[0]->getLeftLeaf()->getContent(),
 							 $subnumbers[2]->getLeftLeaf()->getContent() );
+                        break;
 					default:
 						throw new Exception("Weird number of args for Between");
 				}
+				if(!empty($qualifierExpr)) {
+				    $newItem->setQualifiers($qualifierExpr);
+                }
+                return $newItem;
 				break;
 			case 'quantity':
 				$pid = $tree->getSubnode(1)->getLeftLeaf()->getContent();
@@ -222,8 +264,16 @@ ENDG;
 				} else {
 					$high = null;
 				}
-				return new Quantity($itemName, $pid, $low, $high);
-			case 'tree':
+                $qualifiers = $this->getQualifiers($tree, $itemName, 6, $qname );
+                if(!empty($qualifiers)) {
+                    $qualifierExpr = new Qualifiers($itemName, $pid, $qname, $qualifiers);
+                }
+                $newItem = new Quantity($itemName, $pid, $low, $high);
+                if(!empty($qualifierExpr)) {
+                    $newItem->setQualifiers($qualifierExpr);
+                }
+                return $newItem;
+            case 'tree':
 				$extract = function ($it) { return $it->getLeftLeaf()->getContent(); };
 				if($tree->getSubnode(3)->isBranch()) {
 					$forward = array_map($extract, $tree->getSubnode(3)->findAll('Number'));

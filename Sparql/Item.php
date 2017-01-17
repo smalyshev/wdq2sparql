@@ -6,7 +6,7 @@ namespace Sparql;
  */
 class Item extends ItemExpression {
 
-	public function emit(Syntax $syntax) {
+	public function emit(Syntax $syntax, $indent = "") {
 		// do not produce expression
 		return "";
 	}

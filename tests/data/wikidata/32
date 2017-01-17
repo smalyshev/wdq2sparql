@@ -1,0 +1,7 @@
+claim[26]{BETWEEN[582,1978-06-03,1978-06-03]}
+?item p:P26 ?item_st0 .
+?item_st0 ps:P26 [] .
+{
+  ?item_st0 pq:P582 ?time0 .
+  FILTER ( ?time0 >= "1978-06-03T00:00:00Z"^^xsd:dateTime && ?time0 <= "1978-06-03T00:00:00Z"^^xsd:dateTime )
+}

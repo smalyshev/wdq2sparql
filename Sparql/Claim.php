@@ -4,14 +4,13 @@ namespace Sparql;
 /**
  * WDQ CLAIM[]
  */
-class Claim extends Expression {
-	/**
-	 * Variable name for item
-	 * @var string
-	 */
-	private $itemName;
+class Claim extends QualifiedExpression {
+    /**
+     * @var ItemExpression
+     */
+    private $value;
 
-	/**
+    /**
 	 * CLAIM[PROPERTY:ITEM,...]
 	 * @param string $item parent item variable, e.g. ?item
 	 * @param string $id property ID
@@ -24,8 +23,10 @@ class Claim extends Expression {
 	}
 
 	public function emit( Syntax $syntax, $indent = "" ) {
-		return "$indent{$this->itemName} {$syntax->propertyName($this->id)} {$this->value->getVarName($syntax)} .\n"
-				. $this->value->emit($syntax, $indent);
+	    return $this->directOrQualifiedValue($syntax, $this->id, $this->value->getVarName($syntax), $indent)
+            . $this->addQualifiers($syntax, $indent)
+            . $this->value->emit($syntax, $indent);
 	}
+
 }
 

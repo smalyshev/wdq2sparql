@@ -5,6 +5,11 @@ namespace Sparql;
  * SPARQL syntax representation
  */
 interface Syntax {
+    const TYPE_DIRECT = "direct";
+    const TYPE_STATEMENT = "statement";
+    const TYPE_STATEMENT_SIMPLE = "simplevalue";
+    const TYPE_QUALIFIER = "qualifier";
+
 	/**
 	 * Get SPARQL prefixes for this syntax
 	 */
@@ -13,7 +18,7 @@ interface Syntax {
 	 * Expressing property name expression that states "X has property Y"
 	 * @param string $id
 	 */
-	function propertyName( $id );
+	function propertyName( $id, $type = self::TYPE_DIRECT );
 	/**
 	 * Expressing item name, e.g. Q123
 	 * @param string $id

@@ -1,0 +1,8 @@
+quantity[1082:35000,40000]{claim[580] AND claim[582]}
+?item p:P1082 ?item_st0 .
+?item_st0 ps:P1082 ?q0 .
+{
+  ?item_st0 pq:P580 [] .
+  ?item_st0 pq:P582 [] .
+}
+FILTER ( ?q0 >= 35000 && ?q0 <= 40000 )

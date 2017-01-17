@@ -10,7 +10,16 @@ class WDTK implements Syntax {
 	}
 
 	public function propertyName( $id ) {
-		return ":P{$id}s/:P{$id}v";
+        switch($type) {
+            case self::TYPE_DIRECT:
+                return ":P{$id}s/:P{$id}v";
+            case self::TYPE_STATEMENT:
+                return ":P{$id}s";
+            case self::TYPE_STATEMENT_SIMPLE:
+                return ":P{$id}";
+            case self::TYPE_QUALIFIER:
+                return ":P{$id}q";
+        }
 	}
 
 	public function entityName( $id ) {
