@@ -1,0 +1,4 @@
+ITEMS[1]
+SELECT ?item WHERE {
+  BIND(wd:Q1 as ?item)
+}

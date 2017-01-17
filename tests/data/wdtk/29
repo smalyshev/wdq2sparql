@@ -1,0 +1,5 @@
+ITEMS[1]
+prefix : <http://www.wikidata.org/entity/>
+SELECT ?item WHERE {
+  BIND(:Q1 as ?item)
+}
