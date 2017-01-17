@@ -1,0 +1,8 @@
+items[1339,350] and NOCLAIM[5]
+{
+  BIND(wd:Q1339 as ?item)
+} UNION {
+  BIND(wd:Q350 as ?item)
+}
+OPTIONAL { ?item wdt:P5 ?dummy0 }
+FILTER(!bound(?dummy0))

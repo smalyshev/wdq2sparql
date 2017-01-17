@@ -4,6 +4,7 @@ require_once __DIR__.'/vendor/autoload.php';
 use ParserGenerator\SyntaxTreeNode;
 use ParserGenerator\Parser;
 use Sparql\AndClause;
+use Sparql\ExactItem;
 use Sparql\Qualifiers;
 use Sparql\Subquery;
 use Sparql\Item;
@@ -37,7 +38,7 @@ ExpressionPart
 		:=> Clause
 		:=> "(" Expression ")" .
 
-Clause :=> ( Claim | NoClaim | String | Between | Quantity | Tree | Web | Link | NoLink | Around ) .
+Clause :=> ( Claim | NoClaim | String | Between | Quantity | Tree | Web | Link | NoLink | Around | Items ) .
 
 Claim :=> "CLAIM[" Propvalue+"," "]" ( "{" Expression "}" )?.
 
@@ -67,6 +68,8 @@ Web :=> "WEB[" Item+"," "][" PropList? "]" .
 Link :=> "LINK[" /\w+/ "]" .
 
 NoLink :=> "NOLINK[" /\w+/ "]" .
+
+Items :=> "ITEMS[" Number+"," "]" .
 
 PropList :=> Number+"," .
 
@@ -321,7 +324,13 @@ ENDG;
 				$lon = $tree->getSubnode(5)->getLeftLeaf()->getContent();
 				$radius = $tree->getSubnode(7)->getLeftLeaf()->getContent();
 				return new GeoAround($itemName, $pid, $lat, $lon, $radius);
-			default:
+            case 'items':
+                $items = array();
+                foreach($tree->getSubnode(1)->findAll('Number') as $id) {
+                    $items[] = new ExactItem($itemName, $id);
+                }
+                return new Union($items);
+            default:
 				throw new Exception("Unknown type {$tree->getType()}");
 		}
 		return "";

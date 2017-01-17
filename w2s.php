@@ -2,6 +2,7 @@
 $text = "Nothing yet...";
 $run = false;
 $status = 200;
+$syntax = "Wikidata";
 ini_set('xdebug.max_nesting_level', 10000);
 if(!empty($_REQUEST['wdq'])) {
 	require_once __DIR__.'/WDQ.php';
@@ -14,16 +15,13 @@ if(!empty($_REQUEST['wdq'])) {
 	    if(!empty($_REQUEST['syntax'])) {
             $syntax = preg_replace("/[^a-zA-Z]/", "", $_REQUEST['syntax']);
         }
-		if(empty($syntax)) {
-			$syntax = "Wikidata";
-		}
 		$klass = "Sparql\\Syntax\\$syntax";
 		if(class_exists($klass) && is_a($klass, "Sparql\\Syntax", true)) {
-			$syntax = new $klass;
+			$syntaxClass = new $klass;
 			$exp = $parser->generate($parsed, "?item");
-			$sparql = $exp->emit($syntax, '  ');
+			$sparql = $exp->emit($syntaxClass, '  ');
 			$text = '';
-			foreach($syntax->getPrefixes() as $pref => $url) {
+			foreach($syntaxClass->getPrefixes() as $pref => $url) {
 				$text .= "prefix $pref: <$url>\n";
 			}
 			$text .= "SELECT ?item WHERE {\n$sparql}";
@@ -92,7 +90,7 @@ Translation to SPARQL:<br>
 <?php if($run) {
 	$runURLs = array('Wikidata' => 'http://query.wikidata.org/#', "WDTK" => 'http://milenio.dcc.uchile.cl/sparql?query=');
 ?>
-<a target="_blank" href=" <?=$runURLs[$_POST['syntax']].rawurlencode($text); ?>">Run this query!</a>
+<a target="_blank" href="<?=$runURLs[$syntax].rawurlencode($text); ?>">Run this query!</a>
 <?php } ?>
 <a href="https://github.com/smalyshev/wdq2sparql"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
 </body>
