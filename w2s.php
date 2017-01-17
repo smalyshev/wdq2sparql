@@ -11,8 +11,10 @@ if(!empty($_REQUEST['wdq'])) {
 		$text = "Failed to parse the query";
 		$status = 400;
 	} else {
-		$syntax = preg_replace("/[^a-zA-Z]/", "",$_REQUEST['syntax']);
-		if(!$syntax) {
+	    if(!empty($_REQUEST['syntax'])) {
+            $syntax = preg_replace("/[^a-zA-Z]/", "", $_REQUEST['syntax']);
+        }
+		if(empty($syntax)) {
 			$syntax = "Wikidata";
 		}
 		$klass = "Sparql\\Syntax\\$syntax";
@@ -33,7 +35,14 @@ if(!empty($_REQUEST['wdq'])) {
 		if(empty($_POST['gui'])) {
 			// Labs runs 5.3, 5.3 does not have http_response_code(). Sad.
 			header("HTTP/1.0 $status Banana");
-			header("Content-type: text/plain");
+			header("Access-Control-Allow-Origin: *");
+			if(!empty($_REQUEST['jsonp'])) {
+			    $funcname = preg_replace("/[^a-zA-Z0-9_]/", "", $_REQUEST['jsonp']);
+			    $text = "$funcname(".json_encode($text).");";
+                header("Content-type: application/javascript");
+            } else {
+                header("Content-type: text/plain");
+            }
 			echo $text;
 			exit();
 		}
